@@ -17,8 +17,9 @@ This is a Wordseer-specific fork of Dustin Smith's [stanford-corenlp-python](htt
    * [pexpect](http://www.noah.org/wiki/pexpect)
    * [unidecode](http://pypi.python.org/pypi/Unidecode)
    * [jsonrpclib](https://github.com/joshmarshall/jsonrpclib) (optionally)
+   * [xmltodict](https://github.com/martinblech/xmltodict) (If using ````batch_parse````)
 
-## Download and Usage
+## Setup
 
 To use this program you must [download](http://nlp.stanford.edu/software/corenlp.shtml#Download) and unpack the zip file containing Stanford's CoreNLP package.  By default, `corenlp.py` looks for the Stanford Core NLP folder as a subdirectory of where the script is being run.
 
@@ -28,7 +29,11 @@ Next, clone this repository and run the setup script:
     cd stanford-corenlp-python
     python setup.py install
 
-Then, to launch a server:
+
+## Usage
+
+### Server
+To launch a server:
 
     python corenlp/corenlp.py
 
@@ -135,6 +140,8 @@ That returns a dictionary containing the keys `sentences` and (when applicable) 
 	                              u'PartOfSpeech': u'.'}]]}],
 	u'coref': [[[[u'It', 1, 0, 0, 1], [u'Hello world', 0, 1, 0, 2]]]]}
 
+
+### Direct
 
 The module can be used directly without JSON-RPC as well. You can optionally supply three parameters:
 + A path to the Stanford CoreNLP package - default is as a subdirectory of where the script is being run.
