@@ -43,10 +43,10 @@ For additional concurrency, you can add a load-balancing layer on top:
 That will run a public JSON-RPC server on port 3456.
 And you can specify Stanford CoreNLP directory:
 
-    python corenlp/corenlp.py -S stanford-corenlp-full-2013-06-20/
+    python corenlp/corenlp.py -S stanford-corenlp-full-2015-04-20/
 
 
-Assuming you are running on port 8080 and CoreNLP directory is `stanford-corenlp-full-2013-06-20/` in current directory, the code in `client.py` shows an example parse:
+Assuming you are running on port 8080 and CoreNLP directory is `stanford-corenlp-full-2015-04-20/` in current directory, the code in `client.py` shows an example parse:
 
     import jsonrpclib
     from simplejson import loads
@@ -153,7 +153,7 @@ The module can be used directly without JSON-RPC as well. You can optionally sup
 If you need to parse long texts (more than 30-50 sentences), you must use a `batch_parse` function. It reads text files from input directory and returns a generator object of dictionaries parsed each file results:
 
     from corenlp import batch_parse
-    corenlp_dir = "stanford-corenlp-full-2013-06-20/"
+    corenlp_dir = "stanford-corenlp-full-2015-04-20/"
     raw_text_directory = "sample_raw_text/"
     parsed = batch_parse(raw_text_directory, corenlp_dir)  # It returns a generator object
     print parsed  #=> [{'coref': ..., 'sentences': ..., 'file_name': 'new_sample.txt'}]
