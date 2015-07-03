@@ -22,6 +22,12 @@ This is a Wordseer-specific fork of Dustin Smith's [stanford-corenlp-python](htt
 
 To use this program you must [download](http://nlp.stanford.edu/software/corenlp.shtml#Download) and unpack the zip file containing Stanford's CoreNLP package.  By default, `corenlp.py` looks for the Stanford Core NLP folder as a subdirectory of where the script is being run.
 
+Next, clone this repository and run the setup script:
+
+    git clone https://github.com/Wordseer/stanford-corenlp-python.git
+    cd stanford-corenlp-python
+    python setup.py install
+
 Then, to launch a server:
 
     python corenlp/corenlp.py
@@ -129,12 +135,20 @@ That returns a dictionary containing the keys `sentences` and (when applicable) 
 	                              u'PartOfSpeech': u'.'}]]}],
 	u'coref': [[[[u'It', 1, 0, 0, 1], [u'Hello world', 0, 1, 0, 2]]]]}
 
-Not to use JSON-RPC, load the module instead:
 
-    from corenlp import StanfordCoreNLP
-    corenlp_dir = "stanford-corenlp-full-2013-06-20/"
-    corenlp = StanfordCoreNLP(corenlp_dir)  # wait a few minutes...
-    corenlp.raw_parse("Parse it")
+The module can be used directly without JSON-RPC as well. You can optionally supply three parameters:
++ A path to the Stanford CoreNLP package - default is as a subdirectory of where the script is being run.
++ A memory limit - default is 3GB (specified as ````3g````)
++ A properties file - default is ````corenlp/default.properties````
+
+      from corenlp import StanfordCoreNLP
+      ccorenlp_dir = "stanford-corenlp-full-2015-04-20"
+      corenlp_mem = "4g"
+      corenlp = StanfordCoreNLP(corenlp_dir, corenlp_mem) # Can take a minute...
+      output = corenlp.raw_parse("Parse it")
+      print output
+
+
 
 If you need to parse long texts (more than 30-50 sentences), you must use a `batch_parse` function. It reads text files from input directory and returns a generator object of dictionaries parsed each file results:
 
@@ -157,4 +171,3 @@ The function uses XML output feature of Stanford CoreNLP, and you can take all i
    * Tristan Chong [tristan@wikia-inc.com]
    * Aditi Muralidharan [aditi.shrikumar@gmail.com]
    * Ian MacFarland [ianmacfarland@ischool.berkeley.edu]
-
