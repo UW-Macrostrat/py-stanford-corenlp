@@ -148,16 +148,19 @@ The module can be used directly without JSON-RPC as well. You can optionally sup
 + A memory limit - default is 3GB (specified as ````3g````)
 + A properties file - default is ````corenlp/default.properties````
 
-      from corenlp import StanfordCoreNLP
-      ccorenlp_dir = "stanford-corenlp-full-2015-04-20"
-      corenlp_mem = "4g"
-      corenlp = StanfordCoreNLP(corenlp_dir, corenlp_mem) # Can take a minute...
-      output = corenlp.raw_parse("Parse it")
-      print output
 
+````
+from corenlp import StanfordCoreNLP
+ccorenlp_dir = "stanford-corenlp-full-2015-04-20"
+corenlp_mem = "4g"
+corenlp = StanfordCoreNLP(corenlp_dir, corenlp_mem) # Can take a minute...
+output = corenlp.raw_parse("Parse it")
+print output
+````
 
 
 If you need to parse long texts (more than 30-50 sentences), you must use a `batch_parse` function. It reads text files from input directory and returns a generator object of dictionaries parsed each file results:
+
 
     from corenlp import batch_parse
     corenlp_dir = "stanford-corenlp-full-2015-04-20/"
