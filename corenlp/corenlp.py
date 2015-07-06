@@ -142,7 +142,9 @@ def parse_bracketed(s):
             word = remove_escapes(val)
         else:
             attrs[attr] = remove_escapes(val)
-    return (word, attrs)
+
+    attrs["word"] = word
+    return attrs
 
 
 def parse_parser_results(text):
@@ -175,7 +177,7 @@ def parse_parser_results(text):
                 state = STATE_DEPENDENCY
                 # skipping TREE because the new depparse annotator doesn't make a parse tree
 
-        
+
         elif state == STATE_DEPENDENCY:
             if len(line) == 0:
                 state = STATE_COREFERENCE
@@ -521,4 +523,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print >>sys.stderr, "Bye."
         exit()
-
