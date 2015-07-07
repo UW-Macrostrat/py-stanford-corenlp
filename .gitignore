@@ -2,3 +2,8 @@
 /stanford-corenlp-*
 .*project
 
+*.egg
+*.egg-info
+
+build/
+dist/
