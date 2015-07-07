@@ -10,6 +10,4 @@ __author__ = 'Hiroyoshi Komatsu'
 __license__ = 'GNU v2+'
 
 # classes
-from corenlp import StanfordCoreNLP, ParserError, TimeoutError, ProcessError
-# functions
-from corenlp import batch_parse
+from corenlp import StanfordCoreNLP

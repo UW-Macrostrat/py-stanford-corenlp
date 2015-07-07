@@ -143,11 +143,19 @@ That returns a dictionary containing the keys `sentences` and (when applicable) 
 
 ### Direct
 
-The module can be used directly without JSON-RPC as well. You can optionally supply three parameters:
+The module can be used directly without JSON-RPC as well. You can optionally supply three parameters when creating the NLP instance.
+
+###### Parameters:
 + A path to the Stanford CoreNLP package - default is as a subdirectory of where the script is being run.
 + A memory limit - default is 3GB (specified as ````3g````)
 + A properties file - default is ````corenlp/default.properties````
 
+###### Methods:
++ ````parse```` - returns JSON
++ ````raw_parse```` - returns a Python data structure
++ ````batch_parse```` - same as ````raw_parse````, but should be used for long texts
+
+###### Example:
 
 ````
 from corenlp import StanfordCoreNLP
@@ -166,13 +174,13 @@ If you need to parse long texts (more than 30-50 sentences), you must use a `bat
     corenlp_dir = "stanford-corenlp-full-2015-04-20/"
     raw_text_directory = "sample_raw_text/"
     parsed = batch_parse(raw_text_directory, corenlp_dir)  # It returns a generator object
-    print parsed  #=> [{'coref': ..., 'sentences': ..., 'file_name': 'new_sample.txt'}]
+    print parsed  # => <generator object parse_xml_output at 0x101a0c8c0>
 
 The function uses XML output feature of Stanford CoreNLP, and you can take all information by `raw_output` option. If true, CoreNLP's XML is returned as a dictionary without converting the format.
 
     parsed = batch_parse(raw_text_directory, corenlp_dir, raw_output=True)
 
-(note: The function requires xmltodict now, you should install it by `sudo pip install xmltodict`)
+(Note: this function requires ````xmltodict````, which can be installed with `sudo pip install xmltodict`)
 
 ## Developers
    * Hiroyoshi Komatsu [hiroyoshi.komat@gmail.com]
