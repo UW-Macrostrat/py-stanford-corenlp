@@ -1,180 +1,60 @@
-# A Python wrapper for the Java Stanford Core NLP tools
+# py-stanford-corenlp
 
-This is a Wordseer-specific fork of Dustin Smith's [stanford-corenlp-python](https://github.com/dasmith/stanford-corenlp-python), a Python interface to [Stanford CoreNLP](http://nlp.stanford.edu/software/corenlp.shtml). It can either use as python package, or run as a JSON-RPC server.
+This is a fork of the [Wordseer-specific fork](https://github.com/Wordseer/stanford-corenlp-python) of Dustin Smith's [stanford-corenlp-python](https://github.com/dasmith/stanford-corenlp-python), a Python interface to [Stanford CoreNLP](http://nlp.stanford.edu/software/corenlp.shtml). In contrast to the above-mentioned versions, this version _only_ functions as a Python package, and not as a JSON-RPC server.
 
-## Edited
-   * Tested only with the current annotator configuration: not a general-purpose wrapper
-   * Update to Stanford CoreNLP v3.5.2
-   * Added multi-threaded load balancing
-   * Fix many bugs & improve performance
-   * Using jsonrpclib for stability and performance
-   * Can edit the constants as argument such as Stanford Core NLP directory
-   * Adjust parameters not to timeout in high load
-   * Fix a problem with long text input by Johannes Castner [stanford-corenlp-python](https://github.com/jac2130/stanford-corenlp-python)
-   * Packaging
+## Differences
+For a comparison between the Wordseer fork and Dustin Smith's version, please see [the README ](https://github.com/Wordseer/stanford-corenlp-python#edited) of the Wordseer fork. Below is an outline of differences between this version and the Wordseer fork:
 
-## Requirements
-   * [pexpect](http://www.noah.org/wiki/pexpect)
-   * [unidecode](http://pypi.python.org/pypi/Unidecode)
-   * [jsonrpclib](https://github.com/joshmarshall/jsonrpclib) (optionally)
-   * [xmltodict](https://github.com/martinblech/xmltodict) (If using ````batch_parse````)
++ Removed JSON-RPC server
++ Removed input parameters
++ Removed ````batch_parse````
++ Cleaned up dependencies and unused code
++ Completely reworked Python dictionary/JSON formatting to be based on the standard XML output instead of the serial output. The serial output excludes different fields returned by different annotators, and the structure of the JSON output of the previous version was inconsistent with the XML output, making parsing difficult.
++ Thorough documentation
+
+
 
 ## Setup
 
-To use this program you must [download](http://nlp.stanford.edu/software/corenlp.shtml#Download) and unpack the zip file containing Stanford's CoreNLP package.  By default, `corenlp.py` looks for the Stanford Core NLP folder as a subdirectory of where the script is being run.
+To use this package you must [download](http://nlp.stanford.edu/software/corenlp.shtml#Download) and unpack the zip file containing Stanford's CoreNLP package.  By default, ````corenlp.py```` looks for the Stanford Core NLP folder as a subdirectory of where the script is being run.
 
 Next, clone this repository and run the setup script:
 
-    git clone https://github.com/Wordseer/stanford-corenlp-python.git
-    cd stanford-corenlp-python
+    git clone https://github.com/UW-Macrostrat/py-stanford-corenlp.git
+    cd py-stanford-corenlp
     python setup.py install
 
 
 ## Usage
 
-### Server
-To launch a server:
-
-    python corenlp/corenlp.py
-
-Optionally, you can specify a host or port:
-
-    python corenlp/corenlp.py -H 0.0.0.0 -p 3456
-
-For additional concurrency, you can add a load-balancing layer on top:
-
-    python corenlp/corenlp.py --ports=8081,8082,8083,8084
-
-That will run a public JSON-RPC server on port 3456.
-And you can specify Stanford CoreNLP directory:
-
-    python corenlp/corenlp.py -S stanford-corenlp-full-2015-04-20/
-
-
-Assuming you are running on port 8080 and CoreNLP directory is `stanford-corenlp-full-2015-04-20/` in current directory, the code in `client.py` shows an example parse:
-
-    import jsonrpclib
-    from simplejson import loads
-    server = jsonrpclib.Server("http://localhost:8080")
-
-    result = loads(server.parse("Hello world.  It is so beautiful"))
-    print "Result", result
-
-If you are using the load balancing component, then you can use the following approach:
-
-    import jsonrpclib
-    from simplejson import loads
-    server = jsonrpclib.Server("http://localhost:8080")
-
-    result = loads(server.send("Hello world.  It is so beautiful"))
-    print "Result", server.getForKey(result['key'])
-
-    # asynchronous parsing and retrieval
-    sents = [ 'add in as many sentences as you want', 'your mileage may vary' ]
-    for sent in sents:
-    	server.send(sent)
-    # this approach is non-blocking
-    print server.getCompleted()
-    # this approach waits for all in-progress parses to finish (i.e. blocks)
-    print server.getAll()
-
-That returns a dictionary containing the keys `sentences` and (when applicable) `corefs`. The key `sentences` contains a list of dictionaries for each sentence, which contain `parsetree`, `text`, `tuples` containing the dependencies, and `words`, containing information about parts of speech, NER, etc:
-
-	{u'sentences': [{u'parsetree': u'(ROOT (S (VP (NP (INTJ (UH Hello)) (NP (NN world)))) (. !)))',
-	                 u'text': u'Hello world!',
-	                 u'tuples': [[u'dep', u'world', u'Hello'],
-	                             [u'root', u'ROOT', u'world']],
-	                 u'words': [[u'Hello',
-	                             {u'CharacterOffsetBegin': u'0',
-	                              u'CharacterOffsetEnd': u'5',
-	                              u'Lemma': u'hello',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'UH'}],
-	                            [u'world',
-	                             {u'CharacterOffsetBegin': u'6',
-	                              u'CharacterOffsetEnd': u'11',
-	                              u'Lemma': u'world',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'NN'}],
-	                            [u'!',
-	                             {u'CharacterOffsetBegin': u'11',
-	                              u'CharacterOffsetEnd': u'12',
-	                              u'Lemma': u'!',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'.'}]]},
-	                {u'parsetree': u'(ROOT (S (NP (PRP It)) (VP (VBZ is) (ADJP (RB so) (JJ beautiful))) (. .)))',
-	                 u'text': u'It is so beautiful.',
-	                 u'tuples': [[u'nsubj', u'beautiful', u'It'],
-	                             [u'cop', u'beautiful', u'is'],
-	                             [u'advmod', u'beautiful', u'so'],
-	                             [u'root', u'ROOT', u'beautiful']],
-	                 u'words': [[u'It',
-	                             {u'CharacterOffsetBegin': u'14',
-	                              u'CharacterOffsetEnd': u'16',
-	                              u'Lemma': u'it',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'PRP'}],
-	                            [u'is',
-	                             {u'CharacterOffsetBegin': u'17',
-	                              u'CharacterOffsetEnd': u'19',
-	                              u'Lemma': u'be',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'VBZ'}],
-	                            [u'so',
-	                             {u'CharacterOffsetBegin': u'20',
-	                              u'CharacterOffsetEnd': u'22',
-	                              u'Lemma': u'so',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'RB'}],
-	                            [u'beautiful',
-	                             {u'CharacterOffsetBegin': u'23',
-	                              u'CharacterOffsetEnd': u'32',
-	                              u'Lemma': u'beautiful',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'JJ'}],
-	                            [u'.',
-	                             {u'CharacterOffsetBegin': u'32',
-	                              u'CharacterOffsetEnd': u'33',
-	                              u'Lemma': u'.',
-	                              u'NamedEntityTag': u'O',
-	                              u'PartOfSpeech': u'.'}]]}],
-	u'coref': [[[[u'It', 1, 0, 0, 1], [u'Hello world', 0, 1, 0, 2]]]]}
-
-
-### Direct
-
-The module can be used directly without JSON-RPC as well. You can optionally supply three parameters:
+First, import the package and create a parser. The method takes the following parameters:
 + A path to the Stanford CoreNLP package - default is as a subdirectory of where the script is being run.
 + A memory limit - default is 3GB (specified as ````3g````)
 + A properties file - default is ````corenlp/default.properties````
 
 
 ````
-from corenlp import StanfordCoreNLP
-ccorenlp_dir = "stanford-corenlp-full-2015-04-20"
-corenlp_mem = "4g"
-corenlp = StanfordCoreNLP(corenlp_dir, corenlp_mem) # Can take a minute...
-output = corenlp.raw_parse("Parse it")
+from pycorenlp import *
+
+parser = StanfordCoreNLP("/your/path/to/stanford-corenlp-full", "4g", "pycorenlp/default.properties")
+
+....
+````
+
+You can then parse text using ````parse```` which returns JSON, or ````raw_parse```` which returns XML.
+
+````
+...
+
+output = parser.parse("The quick brown fox jumps over the lazy dog")
 print output
 ````
 
+## License
+[GNU GPLv2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
-If you need to parse long texts (more than 30-50 sentences), you must use a `batch_parse` function. It reads text files from input directory and returns a generator object of dictionaries parsed each file results:
 
-
-    from corenlp import batch_parse
-    corenlp_dir = "stanford-corenlp-full-2015-04-20/"
-    raw_text_directory = "sample_raw_text/"
-    parsed = batch_parse(raw_text_directory, corenlp_dir)  # It returns a generator object
-    print parsed  #=> [{'coref': ..., 'sentences': ..., 'file_name': 'new_sample.txt'}]
-
-The function uses XML output feature of Stanford CoreNLP, and you can take all information by `raw_output` option. If true, CoreNLP's XML is returned as a dictionary without converting the format.
-
-    parsed = batch_parse(raw_text_directory, corenlp_dir, raw_output=True)
-
-(note: The function requires xmltodict now, you should install it by `sudo pip install xmltodict`)
-
-## Developers
+## Original developers
    * Hiroyoshi Komatsu [hiroyoshi.komat@gmail.com]
    * Johannes Castner [jac2130@columbia.edu]
    * Robert Elwell [robert@wikia-inc.com]

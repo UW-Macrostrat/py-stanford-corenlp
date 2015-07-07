@@ -1,38 +1,34 @@
 import sys
 from setuptools import setup, find_packages
 
-PACKAGE = "corenlp"
-NAME = "stanford-corenlp-python"
-DESCRIPTION = "A Stanford Core NLP wrapper (wordseer fork)"
-AUTHOR = "Hiroyoshi Komatsu, Dustin Smith, Aditi Muralidharan, Ian MacFarland"
-AUTHOR_EMAIL = "aditi.shrikumar@gmail.com"
-URL = "https://github.com/Wordseer/stanford-corenlp-python"
-VERSION = "3.3.10"
-INSTALLATION_REQS = ["unidecode >= 0.04.12", "xmltodict >= 0.4.6"]
+package = "pycorenlp"
+name = "py-stanford-corenlp"
+version = "4.0.0"
+description = "A Stanford Core NLP wrapper (UW-Macrostrat fork)"
+license="GPLv2+"
 
-PEXPECT = "pexpect >= 2.4"
-WINPEXPECT = "winpexpect >= 1.5"
+author = "John J Czaplewski"
+author_email = "jczaplew@gmail.com"
+url = "https://github.com/UW-Macrostrat/py-stanford-corenlp"
 
-if "win32" in sys.platform or "cygwin" in sys.platform:
-	INSTALLATION_REQS.append(WINPEXPECT)
-else:
-	INSTALLATION_REQS.append(PEXPECT)
+install_requires = ["beautifulsoup4 >= 4.4.0", "pexpect >= 3.3", "unidecode >= 0.04.18"]
+
 
 setup(
-    name=NAME,
-    version=VERSION,
-    description=DESCRIPTION,
-    author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
-    url=URL,
+    name=name,
+    version=version,
+    description=description,
+    author=author,
+    author_email=author_email,
+	license=license,
+    url=url,
     packages=find_packages(),
     package_data = {"": ["*.properties"],
-        "corenlp": ["*.properties"]},
-    install_requires=INSTALLATION_REQS,
+        "py-corenlp": ["*.properties"]},
+    install_requires=install_requires,
     classifiers=[
         ("License :: OSI Approved :: GNU General Public License v2 or later "
             "(GPLv2+)"),
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
     ],
 )
-
